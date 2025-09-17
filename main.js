@@ -3,16 +3,23 @@ let currentUser = null;
 let users = JSON.parse(localStorage.getItem('users')) || {};
 let leaderboard = [];
 
-// SHOP ITEMS
+// ---------- SHOP ITEMS (expanded) ----------
 const shopItems = [
-    { name: "Cursor", baseCost: 100, cookiesPerSec: 1, owned: 0 },
-    { name: "Grandma", baseCost: 1000, cookiesPerSec: 10, owned: 0 },
-    { name: "Factory", baseCost: 10000, cookiesPerSec: 100, owned: 0 },
-    { name: "Bank", baseCost: 100000, cookiesPerSec: 1000, owned: 0 },
-    { name: "Space Station", baseCost: 1000000, cookiesPerSec: 10000, owned: 0 }
+    { name: "Santtu Cursor", baseCost: 100, cookiesPerSec: 1, owned: 0 },
+    { name: "Santtu Grandma", baseCost: 1000, cookiesPerSec: 10, owned: 0 },
+    { name: "Santtu Factory", baseCost: 100000, cookiesPerSec: 100, owned: 0 },
+    { name: "Santtu Bank", baseCost: 1000000, cookiesPerSec: 1000, owned: 0 },
+    { name: "Santtu Space Station", baseCost: 10000000, cookiesPerSec: 10000, owned: 0 },
+    { name: "Santtu Rocket", baseCost: 50000000, cookiesPerSec: 50000, owned: 0 },
+    { name: "Santtu Robot", baseCost: 200000000, cookiesPerSec: 200000, owned: 0 },
+    { name: "Santtu AI", baseCost: 1000000000, cookiesPerSec: 1000000, owned: 0 },
+    { name: "Santtu Galaxy", baseCost: 50000000000, cookiesPerSec: 5000000, owned: 0 },
+    { name: "Santtu Universe", baseCost: 100000000000, cookiesPerSec: 50000000, owned: 0 },
+    { name: "Santtu Multiverse", baseCost: 1000000000000, cookiesPerSec: 500000000, owned: 0 },
+    { name: "Santtu Infinity", baseCost: 100000000000000, cookiesPerSec: 1000000000, owned: 0 }
 ];
 
-// RANKS
+// ---------- RANKS ----------
 const ranks = [
     { name: "Gay Lanttu", img: "santtu.png", minCookies: 0 },
     { name: "Santtu1", img: "santtu1.png", minCookies: 10000 },
@@ -105,22 +112,31 @@ window.buyItem = function(index) {
     }
 };
 
-// ---------- LEADERBOARD ----------
+// ---------- LEADERBOARD (improved) ----------
 function updateLeaderboard() {
     leaderboard = [];
     for (let user in users) {
         const cookies = users[user].cookies;
         const rank = ranks.slice().reverse().find(r => cookies >= r.minCookies);
-        leaderboard.push({ username: user, cookies, rank: rank.img });
+        leaderboard.push({ username: user, cookies, rank: rank.img, rankName: rank.name });
     }
 
     leaderboard.sort((a,b) => b.cookies - a.cookies);
 
     const list = document.getElementById('leaderboard-list');
     list.innerHTML = '';
-    leaderboard.forEach(u => {
+    leaderboard.forEach((u, index) => {
         const div = document.createElement('div');
-        div.innerHTML = `<img src="${u.rank}" width="50"> ${u.username}: ${u.cookies} cookies`;
+        div.style.display = "flex";
+        div.style.alignItems = "center";
+        div.style.justifyContent = "center";
+        div.style.margin = "5px";
+        div.innerHTML = `
+            <span style="margin-right:10px">${index + 1}.</span>
+            <img src="${u.rank}" width="50" style="margin-right:10px">
+            <strong>${u.username}</strong> - ${u.cookies.toLocaleString()} cookies
+            <span style="margin-left:10px">(${u.rankName})</span>
+        `;
         list.appendChild(div);
     });
 }
