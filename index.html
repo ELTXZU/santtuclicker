@@ -2,28 +2,51 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Santtu Clicker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>santtuclicker v2</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Santtu Clicker</h1>
-    <div class="santtu-container">
-        <img src="santtu.png" id="santtu" alt="santtu clickable">
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen">
+        <h1>Login / Register</h1>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button id="login-btn">Login / Register</button>
+        <p id="login-msg"></p>
     </div>
 
-    <p>Santtu's: <span id="santtu_points">0</span></p>
-    <p>Click Power: <span id="click_power">1</span></p>
-    <p>Auto Click Power: <span id="auto_click_power">0</span></p>
-    <p id="comboText">Combo: x1</p>
+    <!-- MAIN GAME -->
+    <div id="game-container" class="hidden">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn" data-tab="main">Main</button>
+            <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
+            <button class="tab-btn" data-tab="shop">Shop</button>
+            <button class="tab-btn" data-tab="settings">Settings</button>
+        </div>
 
-    <button id="upgradeClick">Upgrade Click (+1) - <span id="click_cost">50</span> Santtu's</button>
-    <button id="upgradeAuto">Auto Click (+1) - <span id="auto_cost">100</span> Santtu's</button>
-    <button id="upgradeMulti">Multi Click (+1 per click) - 200 Santtu's</button>
-    <button id="addLanttu">Add Lanttu - 50 Santtu's</button>
+        <!-- Tab Contents -->
+        <div id="tab-main" class="tab-content">
+            <img src="santtu.png" id="cookie-btn" alt="Santtu">
+            <p>Cookies: <span id="cookie-count">0</span></p>
+        </div>
 
-    <div id="lanttuContainer"></div>
+        <div id="tab-leaderboard" class="tab-content hidden">
+            <h2>Leaderboard</h2>
+            <div id="leaderboard-list"></div>
+        </div>
 
-    <p id="signature">made by eltxzu</p>
+        <div id="tab-shop" class="tab-content hidden">
+            <h2>Shop</h2>
+            <div id="shop-items"></div>
+        </div>
+
+        <div id="tab-settings" class="tab-content hidden">
+            <h2>Settings</h2>
+            <button id="reset-btn">Reset Progress</button>
+        </div>
+    </div>
 
     <script src="main.js"></script>
 </body>
