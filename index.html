@@ -28,7 +28,7 @@
 
         <!-- Tab Contents -->
         <div id="tab-main" class="tab-content">
-            <img src="santtu.png" id="cookie-btn" alt="Santtu">
+            <img src="images/santtu.png" id="cookie-btn" alt="Santtu">
             <p>Cookies: <span id="cookie-count">0</span></p>
         </div>
 
@@ -47,6 +47,22 @@
             <button id="reset-btn">Reset Progress</button>
         </div>
     </div>
+
+    <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.30.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.30.0/firebase-firestore-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBAf6jR_6A-YvWUCd_NsOWVeiybjBN2FbM",
+        authDomain: "santtuclicker.firebaseapp.com",
+        projectId: "santtuclicker",
+        storageBucket: "santtuclicker.firebasestorage.app",
+        messagingSenderId: "426586427950",
+        appId: "1:426586427950:web:b44bb0caf7532014a805bf"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+    </script>
 
     <script src="main.js"></script>
 </body>
