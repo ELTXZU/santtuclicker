@@ -1,15 +1,3 @@
-// ---------- FIREBASE SETUP ----------
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "PROJECT_ID.firebaseapp.com",
-  projectId: "PROJECT_ID",
-  storageBucket: "PROJECT_ID.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
 // ---------- DATA ----------
 let currentUser = null;
 let users = JSON.parse(localStorage.getItem('users')) || {};
@@ -31,15 +19,15 @@ const shopItems = [
     { name: "Santtu Cursor", baseCost: 100, cookiesPerSec: 1, owned: 0 },
     { name: "Santtu Grandma", baseCost: 1000, cookiesPerSec: 10, owned: 0 },
     { name: "Santtu Factory", baseCost: 10000, cookiesPerSec: 100, owned: 0 },
-    { name: "Santtu Bank", baseCost: 1000000, cookiesPerSec: 1000, owned: 0 },
-    { name: "Santtu Space Station", baseCost: 100000000, cookiesPerSec: 10000, owned: 0 },
-    { name: "Santtu Rocket", baseCost: 500000000, cookiesPerSec: 50000, owned: 0 },
-    { name: "Santtu Robot", baseCost: 2000000000, cookiesPerSec: 200000, owned: 0 },
-    { name: "Santtu AI", baseCost: 10000000000, cookiesPerSec: 1000000, owned: 0 },
-    { name: "Santtu Galaxy", baseCost: 50000000000, cookiesPerSec: 5000000, owned: 0 },
-    { name: "Santtu Universe", baseCost: 1000000000000, cookiesPerSec: 50000000, owned: 0 },
-    { name: "Santtu Multiverse", baseCost: 10000000000000, cookiesPerSec: 500000000, owned: 0 },
-    { name: "Santtu Infinity", baseCost: 10000000000000000, cookiesPerSec: 1000000000, owned: 0 }
+    { name: "Santtu Bank", baseCost: 100000, cookiesPerSec: 1000, owned: 0 },
+    { name: "Santtu Space Station", baseCost: 1000000, cookiesPerSec: 10000, owned: 0 },
+    { name: "Santtu Rocket", baseCost: 5000000, cookiesPerSec: 50000, owned: 0 },
+    { name: "Santtu Robot", baseCost: 20000000, cookiesPerSec: 200000, owned: 0 },
+    { name: "Santtu AI", baseCost: 100000000, cookiesPerSec: 1000000, owned: 0 },
+    { name: "Santtu Galaxy", baseCost: 500000000, cookiesPerSec: 5000000, owned: 0 },
+    { name: "Santtu Universe", baseCost: 10000000000, cookiesPerSec: 50000000, owned: 0 },
+    { name: "Santtu Multiverse", baseCost: 100000000000, cookiesPerSec: 500000000, owned: 0 },
+    { name: "Santtu Infinity", baseCost: 1000000000000, cookiesPerSec: 1000000000, owned: 0 }
 ];
 
 // ---------- LOGIN ----------
@@ -51,19 +39,15 @@ const loginMsg = document.getElementById('login-msg');
 loginBtn.addEventListener('click', () => {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-
     if (!username || !password) return loginMsg.textContent = "Enter username & password";
 
     if (!users[username]) {
-        // create new local account
         users[username] = { password, cookies: 0, upgrades: {} };
         localStorage.setItem('users', JSON.stringify(users));
         loginMsg.textContent = "Account created!";
     }
 
-    if (users[username].password !== password) {
-        return loginMsg.textContent = "Wrong password!";
-    }
+    if (users[username].password !== password) return loginMsg.textContent = "Wrong password!";
 
     currentUser = username;
     loadUser();
@@ -126,12 +110,11 @@ window.buyItem = function(index) {
     }
 };
 
-// ---------- SAVE USER (LOCAL) ----------
+// ---------- SAVE USER ----------
 function saveUser() {
     localStorage.setItem('users', JSON.stringify(users));
 }
 
-// ---------- SAVE USER (GLOBAL) ----------
 function saveUserGlobal() {
     const userData = {
         cookies: users[currentUser].cookies,
