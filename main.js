@@ -1,10 +1,16 @@
 // ---------- DATA ----------
 let currentUser = null;
 let users = JSON.parse(localStorage.getItem('users')) || {};
-let leaderboard = [];
+let shopItems = [
+    { name: "Santtu Cursor", baseCost: 100, cookiesPerSec: 1, owned: 0 },
+    { name: "Santtu Grandma", baseCost: 1000, cookiesPerSec: 10, owned: 0 },
+    { name: "Santtu Factory", baseCost: 10000, cookiesPerSec: 100, owned: 0 },
+    { name: "Santtu Bank", baseCost: 100000, cookiesPerSec: 1000, owned: 0 },
+    { name: "Santtu Space Station", baseCost: 1000000, cookiesPerSec: 10000, owned: 0 },
+    { name: "Santtu Rocket", baseCost: 5000000, cookiesPerSec: 50000, owned: 0 }
+];
 
-// ---------- RANKS ----------
-const ranks = [
+let ranks = [
     { name: "Gay Lanttu", img: "santtu.png", minCookies: 0 },
     { name: "Santtu1", img: "santtu1.png", minCookies: 10000 },
     { name: "Santtu2", img: "santtu2.png", minCookies: 100000 },
@@ -14,40 +20,36 @@ const ranks = [
     { name: "Santtu6", img: "santtu6.png", minCookies: 999000000000000 }
 ];
 
-// ---------- SHOP ITEMS ----------
-const shopItems = [
-    { name: "Santtu Cursor", baseCost: 100, cookiesPerSec: 1, owned: 0 },
-    { name: "Santtu Grandma", baseCost: 1000, cookiesPerSec: 10, owned: 0 },
-    { name: "Santtu Factory", baseCost: 10000, cookiesPerSec: 100, owned: 0 },
-    { name: "Santtu Bank", baseCost: 100000, cookiesPerSec: 1000, owned: 0 },
-    { name: "Santtu Space Station", baseCost: 1000000, cookiesPerSec: 10000, owned: 0 },
-    { name: "Santtu Rocket", baseCost: 5000000, cookiesPerSec: 50000, owned: 0 },
-    { name: "Santtu Robot", baseCost: 20000000, cookiesPerSec: 200000, owned: 0 },
-    { name: "Santtu AI", baseCost: 100000000, cookiesPerSec: 1000000, owned: 0 },
-    { name: "Santtu Galaxy", baseCost: 500000000, cookiesPerSec: 5000000, owned: 0 },
-    { name: "Santtu Universe", baseCost: 10000000000, cookiesPerSec: 50000000, owned: 0 },
-    { name: "Santtu Multiverse", baseCost: 100000000000, cookiesPerSec: 500000000, owned: 0 },
-    { name: "Santtu Infinity", baseCost: 1000000000000, cookiesPerSec: 1000000000, owned: 0 }
-];
-
-// ---------- LOGIN ----------
+// ---------- DOM ----------
 const loginScreen = document.getElementById('login-screen');
 const gameContainer = document.getElementById('game-container');
 const loginBtn = document.getElementById('login-btn');
 const loginMsg = document.getElementById('login-msg');
+const cookieBtn = document.getElementById('cookie-btn');
+const cookieCountEl = document.getElementById('cookie-count');
+const rankNameEl = document.getElementById('rank-name');
+const rankImgEl = document.getElementById('rank-img');
+const shopDiv = document.getElementById('shop-items');
+const leaderboardDiv = document.getElementById('leaderboard-list');
+const tabs = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+const resetBtn = document.getElementById('reset-btn');
+const newPasswordInput = document.getElementById('new-password');
+const changePasswordBtn = document.getElementById('change-password-btn');
 
+// ---------- LOGIN ----------
 loginBtn.addEventListener('click', () => {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    if (!username || !password) return loginMsg.textContent = "Enter username & password";
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    if(!username || !password) return loginMsg.textContent = "Enter username & password";
 
-    if (!users[username]) {
+    if(!users[username]) {
         users[username] = { password, cookies: 0, upgrades: {} };
         localStorage.setItem('users', JSON.stringify(users));
         loginMsg.textContent = "Account created!";
     }
 
-    if (users[username].password !== password) return loginMsg.textContent = "Wrong password!";
+    if(users[username].password !== password) return loginMsg.textContent = "Wrong password!";
 
     currentUser = username;
     loadUser();
@@ -57,131 +59,125 @@ loginBtn.addEventListener('click', () => {
 function loadUser() {
     loginScreen.classList.add('hidden');
     gameContainer.classList.remove('hidden');
-    updateCookies();
-    updateLeaderboardGlobal();
+    updateUI();
     renderShop();
+    updateLeaderboardGlobal();
 }
 
 // ---------- COOKIE CLICK ----------
-const cookieBtn = document.getElementById('cookie-btn');
 cookieBtn.addEventListener('click', () => {
     users[currentUser].cookies += 1;
     saveUser();
     saveUserGlobal();
-    updateCookies();
-    updateLeaderboardGlobal();
+    updateUI();
 });
 
-function updateCookies() {
-    document.getElementById('cookie-count').textContent = users[currentUser].cookies.toLocaleString();
-}
-
 // ---------- SHOP ----------
-const shopDiv = document.getElementById('shop-items');
-
 function renderShop() {
     shopDiv.innerHTML = '';
-    shopItems.forEach((item, index) => {
-        const cost = Math.floor(item.baseCost * Math.pow(1.15, item.owned));
-        const canBuy = users[currentUser].cookies >= cost;
+    shopItems.forEach((item,index)=>{
+        const cost = Math.floor(item.baseCost * Math.pow(1.15,item.owned));
+        const btn = document.createElement('button');
+        btn.textContent = `Buy (${cost.toLocaleString()})`;
+        btn.disabled = users[currentUser].cookies < cost;
+        btn.onclick = ()=>buyItem(index);
         const div = document.createElement('div');
-        div.classList.add('shop-item');
-        div.innerHTML = `
-            <h3>${item.name}</h3>
-            <p>Cost: ${cost.toLocaleString()}</p>
-            <p>Owned: ${item.owned}</p>
-            <button ${canBuy ? '' : 'disabled'} onclick="buyItem(${index})">Buy</button>
-        `;
+        div.textContent = `${item.name} - Owned: ${item.owned}`;
+        div.appendChild(document.createElement('br'));
+        div.appendChild(btn);
         shopDiv.appendChild(div);
     });
 }
 
-window.buyItem = function(index) {
+function buyItem(index){
     const item = shopItems[index];
-    const cost = Math.floor(item.baseCost * Math.pow(1.15, item.owned));
-    if (users[currentUser].cookies >= cost) {
+    const cost = Math.floor(item.baseCost * Math.pow(1.15,item.owned));
+    if(users[currentUser].cookies>=cost){
         users[currentUser].cookies -= cost;
         item.owned++;
         saveUser();
         saveUserGlobal();
-        updateCookies();
         renderShop();
+        updateUI();
         updateLeaderboardGlobal();
     }
-};
-
-// ---------- SAVE USER ----------
-function saveUser() {
-    localStorage.setItem('users', JSON.stringify(users));
 }
 
-function saveUserGlobal() {
+// ---------- SAVE ----------
+function saveUser(){
+    localStorage.setItem('users',JSON.stringify(users));
+}
+
+function saveUserGlobal(){
     const userData = {
         cookies: users[currentUser].cookies,
-        upgrades: shopItems.reduce((acc, item) => { acc[item.name] = item.owned; return acc }, {}),
-        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        upgrades: shopItems.reduce((acc,i)=>{acc[i.name]=i.owned;return acc},{})
     };
     db.collection('users').doc(currentUser).set(userData)
-      .then(() => console.log("Saved globally"))
-      .catch(err => console.error(err));
+      .then(()=>console.log("Saved globally"))
+      .catch(err=>console.error(err));
 }
 
-// ---------- GLOBAL LEADERBOARD ----------
-function updateLeaderboardGlobal() {
-    db.collection('users').orderBy('cookies', 'desc').limit(20).get()
-      .then(snapshot => {
-          const list = document.getElementById('leaderboard-list');
-          list.innerHTML = '';
-          let index = 0;
-          snapshot.forEach(doc => {
+// ---------- UPDATE UI ----------
+function updateUI(){
+    cookieCountEl.textContent = users[currentUser].cookies.toLocaleString();
+    const rank = ranks.slice().reverse().find(r=>users[currentUser].cookies>=r.minCookies);
+    rankNameEl.textContent = rank.name;
+    rankImgEl.src = rank.img;
+    renderShop();
+}
+
+// ---------- LEADERBOARD ----------
+function updateLeaderboardGlobal(){
+    db.collection('users').orderBy('cookies','desc').limit(20).get()
+      .then(snapshot=>{
+          leaderboardDiv.innerHTML='';
+          let index=0;
+          snapshot.forEach(doc=>{
               index++;
-              const data = doc.data();
-              const rank = ranks.slice().reverse().find(r => data.cookies >= r.minCookies);
+              const data=doc.data();
+              const rank = ranks.slice().reverse().find(r=>data.cookies>=r.minCookies);
               const div = document.createElement('div');
-              div.style.display = "flex";
-              div.style.alignItems = "center";
-              div.style.justifyContent = "center";
-              div.style.margin = "5px";
-              div.innerHTML = `
-                  <span style="margin-right:10px">${index}.</span>
-                  <img src="images/${rank.img}" width="50" style="margin-right:10px">
-                  <strong>${doc.id}</strong> - ${data.cookies.toLocaleString()} cookies
-                  <span style="margin-left:10px">(${rank.name})</span>
-              `;
-              list.appendChild(div);
+              div.innerHTML=`${index}. ${doc.id} - ${data.cookies.toLocaleString()} (${rank.name})`;
+              leaderboardDiv.appendChild(div);
           });
       });
 }
 
-// ---------- SETTINGS ----------
-document.getElementById('reset-btn').addEventListener('click', () => {
-    if (confirm("Reset all progress?")) {
-        delete users[currentUser];
-        localStorage.setItem('users', JSON.stringify(users));
-        db.collection('users').doc(currentUser).delete()
-          .then(() => location.reload())
-          .catch(err => console.error(err));
-    }
-});
-
 // ---------- TABS ----------
-const tabs = document.querySelectorAll('.tab-btn');
-const tabContents = document.querySelectorAll('.tab-content');
-
-tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        tabContents.forEach(tc => tc.classList.add('hidden'));
-        document.getElementById('tab-' + tab.dataset.tab).classList.remove('hidden');
-        if(tab.dataset.tab === "leaderboard") updateLeaderboardGlobal();
+tabs.forEach(tab=>{
+    tab.addEventListener('click',()=>{
+        tabContents.forEach(tc=>tc.classList.add('hidden'));
+        document.getElementById('tab-'+tab.dataset.tab).classList.remove('hidden');
+        if(tab.dataset.tab==="leaderboard") updateLeaderboardGlobal();
     });
 });
 
+// ---------- PASSWORD CHANGE ----------
+changePasswordBtn.addEventListener('click',()=>{
+    const newPass = newPasswordInput.value.trim();
+    if(!newPass) return alert("Enter new password");
+    users[currentUser].password=newPass;
+    saveUser();
+    alert("Password changed!");
+    newPasswordInput.value='';
+});
+
+// ---------- DELETE ACCOUNT ----------
+resetBtn.addEventListener('click',()=>{
+    if(!confirm("Delete your account?")) return;
+    delete users[currentUser];
+    localStorage.setItem('users',JSON.stringify(users));
+    db.collection('users').doc(currentUser).delete()
+      .then(()=> location.reload())
+      .catch(err=>console.error(err));
+});
+
 // ---------- AUTO COOKIE PER SEC ----------
-setInterval(() => {
-    const cps = shopItems.reduce((sum, item) => sum + (item.cookiesPerSec * item.owned), 0);
+setInterval(()=>{
+    const cps = shopItems.reduce((sum,i)=>sum+i.cookiesPerSec*i.owned,0);
     users[currentUser].cookies += cps;
     saveUser();
     saveUserGlobal();
-    updateCookies();
-    updateLeaderboardGlobal();
-}, 1000);
+    updateUI();
+},1000);
