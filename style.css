@@ -1,47 +1,170 @@
+/* ---------- GENERAL ---------- */
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
+    font-family: 'Arial', sans-serif;
     background: #f5f5f5;
-    margin: 0;
-    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
 }
 
-.hidden { display: none; }
-
+/* ---------- LOGIN ---------- */
 #login-screen {
-    margin-top: 100px;
+    text-align: center;
+    background: #fff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
-input { padding: 10px; margin: 5px; }
+#login-screen input {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 200px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
 
-button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+#login-screen button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background: #ff6f61;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+}
 
+#login-screen button:hover {
+    background: #ff4c3b;
+}
+
+/* ---------- HIDE CLASS ---------- */
+.hidden {
+    display: none;
+}
+
+/* ---------- TABS ---------- */
 .tabs {
     display: flex;
     justify-content: center;
-    margin: 20px 0;
+    margin-bottom: 20px;
 }
 
 .tab-btn {
-    margin: 0 5px;
     padding: 10px 20px;
-    background: #eee;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 10px;
+    background: #ffcc66;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-.tab-content { margin-top: 20px; }
+.tab-btn:hover {
+    background: #ffaa33;
+}
 
+/* ---------- TAB CONTENT ---------- */
+.tab-content {
+    text-align: center;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* ---------- COOKIE BUTTON ---------- */
 #cookie-btn {
-    width: 150px;
+    width: 200px;
     cursor: pointer;
+    transition: transform 0.1s;
+}
+
+#cookie-btn:active {
+    transform: scale(0.95);
+    filter: brightness(1.2);
+}
+
+/* ---------- SHOP ---------- */
+#shop-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
 }
 
 .shop-item {
-    border: 1px solid #ccc;
+    background: #ffe0b3;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.shop-item h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+}
+
+.shop-item p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.shop-item button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 8px;
+    background: #ff6f61;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.shop-item button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* ---------- LEADERBOARD ---------- */
+#leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#leaderboard-list div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    background: #ffedcc;
     padding: 10px;
-    margin: 5px;
-    display: inline-block;
-    width: 150px;
-    border-radius: 5px;
+    margin: 5px 0;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+#leaderboard-list img {
+    border-radius: 50%;
+}
+
+/* ---------- SETTINGS ---------- */
+#reset-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #ff6f61;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#reset-btn:hover {
+    background: #ff4c3b;
 }
