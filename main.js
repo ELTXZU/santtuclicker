@@ -1,127 +1,160 @@
-let santtuPoints = 0;
-let clickPower = 1;
-let autoClickPower = 0;
-let multiClick = 0;
-let lastClicks = [];
-let comboMultiplier = 1;
-let lanttus = [];
-let nextLanttuId = 1;
+// ---------- DATA ----------
+let currentUser = null;
+let users = JSON.parse(localStorage.getItem('users')) || {};
+let leaderboard = [];
 
-let clickCost = 50;
-let autoCost = 100;
+// SHOP ITEMS
+const shopItems = [
+    { name: "Cursor", baseCost: 100, cookiesPerSec: 1, owned: 0 },
+    { name: "Grandma", baseCost: 1000, cookiesPerSec: 10, owned: 0 },
+    { name: "Factory", baseCost: 10000, cookiesPerSec: 100, owned: 0 },
+    { name: "Bank", baseCost: 100000, cookiesPerSec: 1000, owned: 0 },
+    { name: "Space Station", baseCost: 1000000, cookiesPerSec: 10000, owned: 0 }
+];
 
-const santtu = document.getElementById('santtu');
-const pointsEl = document.getElementById('santtu_points');
-const clickPowerEl = document.getElementById('click_power');
-const autoPowerEl = document.getElementById('auto_click_power');
-const clickCostEl = document.getElementById('click_cost');
-const autoCostEl = document.getElementById('auto_cost');
-const comboText = document.getElementById('comboText');
-const signature = document.getElementById('signature');
-const lanttuContainer = document.getElementById('lanttuContainer');
+// RANKS
+const ranks = [
+    { name: "Gay Lanttu", img: "santtu.png", minCookies: 0 },
+    { name: "Santtu1", img: "santtu1.png", minCookies: 10000 },
+    { name: "Santtu2", img: "santtu2.png", minCookies: 100000 },
+    { name: "Santtu3", img: "santtu3.png", minCookies: 1000000 },
+    { name: "Santtu4", img: "santtu4.png", minCookies: 10000000 },
+    { name: "Santtu5", img: "santtu5.png", minCookies: 1000000000 },
+    { name: "Santtu6", img: "santtu6.png", minCookies: 999000000000000 }
+];
 
-// click santtu
-santtu.addEventListener('click', () => {
-    lastClicks.push(Date.now());
-    if(lastClicks.length > 5) lastClicks.shift();
+// ---------- LOGIN ----------
+const loginScreen = document.getElementById('login-screen');
+const gameContainer = document.getElementById('game-container');
+const loginBtn = document.getElementById('login-btn');
+const loginMsg = document.getElementById('login-msg');
 
-    const now = Date.now();
-    if(lastClicks.length === 5 && now - lastClicks[0] <= 2000){
-        comboMultiplier = 2;
-        comboText.textContent = 'Combo: x2 🎉';
-        setTimeout(() => { comboMultiplier = 1; comboText.textContent='Combo: x1'; }, 2000);
+loginBtn.addEventListener('click', () => {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    if (!username || !password) return loginMsg.textContent = "Enter username & password";
+
+    if (!users[username]) {
+        // create new account
+        users[username] = { password, cookies: 0, upgrades: {} };
+        localStorage.setItem('users', JSON.stringify(users));
+        loginMsg.textContent = "Account created!";
     }
 
-    let gain = clickPower + multiClick * comboMultiplier;
-    santtuPoints += gain;
-    pointsEl.textContent = santtuPoints;
+    if (users[username].password !== password) {
+        return loginMsg.textContent = "Wrong password!";
+    }
 
-    const r = Math.floor(Math.random()*206)+50;
-    const g = Math.floor(Math.random()*206)+50;
-    const b = Math.floor(Math.random()*206)+50;
-    santtu.style.filter = `drop-shadow(0 0 15px rgb(${r},${g},${b})) hue-rotate(${Math.random()*360}deg)`;
+    currentUser = username;
+    loadUser();
 });
 
-// upgrade click
-document.getElementById('upgradeClick').addEventListener('click', () => {
-    if(santtuPoints >= clickCost){
-        santtuPoints -= clickCost;
-        clickPower += 1;
-        clickCost = Math.floor(clickCost * 1.5);
-        pointsEl.textContent = santtuPoints;
-        clickPowerEl.textContent = clickPower;
-        clickCostEl.textContent = clickCost;
-    }
-});
-
-// upgrade auto
-document.getElementById('upgradeAuto').addEventListener('click', () => {
-    if(santtuPoints >= autoCost){
-        santtuPoints -= autoCost;
-        autoClickPower += 1;
-        autoCost = Math.floor(autoCost * 1.5);
-        pointsEl.textContent = santtuPoints;
-        autoPowerEl.textContent = autoClickPower;
-        autoCostEl.textContent = autoCost;
-    }
-});
-
-// multi click
-document.getElementById('upgradeMulti').addEventListener('click', () => {
-    if(santtuPoints >= 200){
-        santtuPoints -= 200;
-        multiClick += 1;
-        pointsEl.textContent = santtuPoints;
-    }
-});
-
-// add lanttu
-document.getElementById('addLanttu').addEventListener('click', () => {
-    if(santtuPoints >= 50){
-        santtuPoints -= 50;
-        lanttus.push({id: nextLanttuId++, power: 1});
-        pointsEl.textContent = santtuPoints;
-        renderLanttus();
-    }
-});
-
-// upgrade lanttu
-function upgradeLanttu(id){
-    for(let l of lanttus){
-        if(l.id === id && santtuPoints >= 50){
-            santtuPoints -= 50;
-            l.power += 1;
-            pointsEl.textContent = santtuPoints;
-            renderLanttus();
-            break;
-        }
-    }
+// ---------- LOAD USER ----------
+function loadUser() {
+    loginScreen.classList.add('hidden');
+    gameContainer.classList.remove('hidden');
+    updateCookies();
+    updateLeaderboard();
+    renderShop();
 }
 
-function renderLanttus(){
-    lanttuContainer.innerHTML = '';
-    lanttus.forEach(l => {
-        const img = document.createElement('img');
-        img.src = 'santtu.png';
-        img.classList.add('small-lanttu');
-        img.title = `Power: ${l.power}`;
-        img.addEventListener('click', ()=> upgradeLanttu(l.id));
-        lanttuContainer.appendChild(img);
+// ---------- COOKIE CLICK ----------
+const cookieBtn = document.getElementById('cookie-btn');
+cookieBtn.addEventListener('click', () => {
+    users[currentUser].cookies += 1;
+    saveUser();
+    updateCookies();
+    updateLeaderboard();
+});
+
+function updateCookies() {
+    document.getElementById('cookie-count').textContent = users[currentUser].cookies;
+}
+
+// ---------- SHOP ----------
+const shopDiv = document.getElementById('shop-items');
+
+function renderShop() {
+    shopDiv.innerHTML = '';
+    shopItems.forEach((item, index) => {
+        const cost = Math.floor(item.baseCost * Math.pow(1.15, item.owned));
+        const canBuy = users[currentUser].cookies >= cost;
+        const div = document.createElement('div');
+        div.classList.add('shop-item');
+        div.innerHTML = `
+            <h3>${item.name}</h3>
+            <p>Cost: ${cost}</p>
+            <p>Owned: ${item.owned}</p>
+            <button ${canBuy ? '' : 'disabled'} onclick="buyItem(${index})">Buy</button>
+        `;
+        shopDiv.appendChild(div);
     });
 }
 
-// auto click + lanttus
-setInterval(() => {
-    santtuPoints += autoClickPower;
-    for(let l of lanttus){
-        santtuPoints += l.power;
+window.buyItem = function(index) {
+    const item = shopItems[index];
+    const cost = Math.floor(item.baseCost * Math.pow(1.15, item.owned));
+    if (users[currentUser].cookies >= cost) {
+        users[currentUser].cookies -= cost;
+        item.owned++;
+        saveUser();
+        updateCookies();
+        renderShop();
+        updateLeaderboard();
     }
-    pointsEl.textContent = santtuPoints;
-}, 1000);
+};
 
-// rainbow signature
-let hue = 0;
+// ---------- LEADERBOARD ----------
+function updateLeaderboard() {
+    leaderboard = [];
+    for (let user in users) {
+        const cookies = users[user].cookies;
+        const rank = ranks.slice().reverse().find(r => cookies >= r.minCookies);
+        leaderboard.push({ username: user, cookies, rank: rank.img });
+    }
+
+    leaderboard.sort((a,b) => b.cookies - a.cookies);
+
+    const list = document.getElementById('leaderboard-list');
+    list.innerHTML = '';
+    leaderboard.forEach(u => {
+        const div = document.createElement('div');
+        div.innerHTML = `<img src="${u.rank}" width="50"> ${u.username}: ${u.cookies} cookies`;
+        list.appendChild(div);
+    });
+}
+
+// ---------- SETTINGS ----------
+document.getElementById('reset-btn').addEventListener('click', () => {
+    if (confirm("Reset all progress?")) {
+        delete users[currentUser];
+        localStorage.setItem('users', JSON.stringify(users));
+        location.reload();
+    }
+});
+
+// ---------- TABS ----------
+const tabs = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        tabContents.forEach(tc => tc.classList.add('hidden'));
+        document.getElementById('tab-' + tab.dataset.tab).classList.remove('hidden');
+    });
+});
+
+// ---------- SAVE USER ----------
+function saveUser() {
+    localStorage.setItem('users', JSON.stringify(users));
+}
+
+// ---------- AUTO COOKIE PER SEC ----------
 setInterval(() => {
-    signature.style.color = `hsl(${hue},100%,50%)`;
-    hue = (hue + 2) % 360;
-}, 100);
+    const cps = shopItems.reduce((sum, item) => sum + (item.cookiesPerSec * item.owned), 0);
+    users[currentUser].cookies += cps;
+    saveUser();
+    updateCookies();
+    updateLeaderboard();
+}, 1000);
