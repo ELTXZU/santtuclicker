@@ -1,75 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SanttuClicker v3</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Santtu Clicker</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"></script>
 </head>
 <body>
-
-<!-- LOGIN SCREEN -->
-<div id="login-screen">
-  <h1>SanttuClicker Login</h1>
-  <input type="text" id="username" placeholder="Username">
-  <input type="password" id="password" placeholder="Password">
-  <button id="login-btn">Login / Register</button>
-  <p id="login-msg"></p>
-</div>
-
-<!-- MAIN GAME -->
-<div id="game-container" class="hidden">
-  <div class="header">
-    <p>Cookies: <span id="cookie-count">0</span></p>
-    <p>Rank: <span id="rank-name">Gay Lanttu</span> <img id="rank-img" src="santtu.png" width="40"></p>
+  <!-- LOGIN -->
+  <div id="login-screen">
+    <h1>Santtu Clicker</h1>
+    <input type="text" id="username" placeholder="Username"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <button id="login-btn">Login / Register</button>
+    <p id="login-msg"></p>
   </div>
 
-  <div class="tabs">
-    <button class="tab-btn" data-tab="main">Main</button>
-    <button class="tab-btn" data-tab="shop">Shop</button>
-    <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
-    <button class="tab-btn" data-tab="settings">Settings</button>
-  </div>
+  <!-- GAME -->
+  <div id="game-container" class="hidden">
+    <!-- Tabs -->
+    <div id="tabs">
+      <button class="tab-btn" data-tab="main">Main</button>
+      <button class="tab-btn" data-tab="shop">Shop</button>
+      <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
+    </div>
 
-  <div id="tab-main" class="tab-content">
-    <img id="cookie-btn" src="santtu.png" alt="Santtu Clicker" width="200">
-  </div>
+    <!-- MAIN -->
+    <div id="tab-main" class="tab-content">
+      <h2>Cookies: <span id="cookie-count">0</span></h2>
+      <h3>Rank: <span id="rank-name"></span></h3>
+      <img id="rank-img" src="santtu.png" width="120">
+      <br>
+      <button id="cookie-btn">🍪 Click Santtu!</button>
+    </div>
 
-  <div id="tab-shop" class="tab-content hidden">
-    <h2>Shop</h2>
-    <div id="shop-items"></div>
-  </div>
+    <!-- SHOP -->
+    <div id="tab-shop" class="tab-content hidden">
+      <h2>Shop</h2>
+      <div id="shop-items"></div>
+    </div>
 
-  <div id="tab-leaderboard" class="tab-content hidden">
-    <h2>Leaderboard</h2>
-    <div id="leaderboard-list"></div>
-  </div>
+    <!-- LEADERBOARD -->
+    <div id="tab-leaderboard" class="tab-content hidden">
+      <h2>Leaderboard</h2>
+      <div id="leaderboard-list"></div>
+    </div>
 
-  <div id="tab-settings" class="tab-content hidden">
-    <h2>Settings</h2>
-    <button id="reset-btn">Delete Account</button>
-    <div>
-      <input type="password" id="new-password" placeholder="New Password">
+    <!-- SETTINGS -->
+    <div id="tab-settings" class="tab-content hidden">
+      <h2>Settings</h2>
+      <input type="password" id="new-password" placeholder="New password">
       <button id="change-password-btn">Change Password</button>
+      <br><br>
+      <button id="reset-btn" class="danger">Delete Account</button>
     </div>
   </div>
-</div>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.30.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.30.0/firebase-firestore-compat.js"></script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyBAf6jR_6A-YvWUCd_NsOWVeiybjBN2FbM",
-  authDomain: "santtuclicker.firebaseapp.com",
-  projectId: "santtuclicker",
-  storageBucket: "santtuclicker.firebasestorage.app",
-  messagingSenderId: "426586427950",
-  appId: "1:426586427950:web:b44bb0caf7532014a805bf"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
-<script src="main.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
