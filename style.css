@@ -1,0 +1,53 @@
+body {
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    background-color: #1a1a1a;
+    color: white;
+}
+
+.santtu-container img {
+    width: 200px;
+    cursor: pointer;
+    transition: transform 0.1s, filter 0.3s;
+}
+
+.santtu-container img:active {
+    transform: scale(0.9);
+}
+
+button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: #333;
+    color: white;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+#signature {
+    font-size: 20px;
+    margin-top: 30px;
+    font-weight: bold;
+}
+
+.small-lanttu {
+    width: 50px;
+    margin: 5px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.small-lanttu:hover {
+    transform: scale(1.2);
+}
+
+#lanttuContainer {
+    margin-top: 20px;
+}
